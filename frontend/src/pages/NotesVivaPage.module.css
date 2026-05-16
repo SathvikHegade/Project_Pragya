@@ -1,0 +1,245 @@
+.page {
+  min-height: 100vh;
+  padding-top: 90px;
+  background: var(--surface-1);
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 32px 60px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.filterBtn {
+  padding: 8px 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 100px;
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterBtn:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.filterActive {
+  background: var(--green-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  border-radius: var(--radius-lg);
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+}
+
+.cardHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  text-align: left;
+}
+
+.cardInfo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cardIcon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.metaItem {
+  color: var(--text-muted);
+}
+
+.cardRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.launchBtn {
+  padding: 8px 16px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #141414;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.launchBtn:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+
+.cardBody {
+  padding: 0 22px 20px;
+  border-top: 1px solid var(--border-default);
+}
+
+.notesSection {
+  padding-top: 16px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.notesText {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.vivaSection {
+  padding-top: 16px;
+}
+
+.vivaItem {
+  border-bottom: 1px solid var(--border-default);
+}
+
+.vivaQ {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.vivaQ:hover {
+  color: var(--accent);
+}
+
+.vivaNum {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.vivaText {
+  flex: 1;
+}
+
+.vivaA {
+  padding: 0 0 12px 20px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 24px 20px 40px;
+  }
+  .title {
+    font-size: 1.6rem;
+  }
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .cardRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .filters {
+    flex-wrap: wrap;
+  }
+}
