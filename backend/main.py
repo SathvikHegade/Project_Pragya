@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from contextlib import asynccontextmanager
+from datetime import datetime
 import uvicorn
 import logging
 
@@ -26,13 +27,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS
+# CORS - allow specific origins (NOT "*" with credentials)
+ALLOWED_ORIGINS = [
+    "https://project-pragya-ui.onrender.com",
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict in production
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    expose_headers=["Content-Length", "X-Request-ID"],
 )
 
 # Routers
@@ -53,7 +61,12 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy", "service": "pragya-api"}
+    return {
+        "status": "healthy",
+        "service": "pragya-api",
+        "version": "1.0.0",
+        "timestamp": str(datetime.now()),
+    }
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
