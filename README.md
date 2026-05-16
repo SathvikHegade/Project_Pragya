@@ -1,7 +1,7 @@
 # 🧪 PRAGYA – Virtual STEM Lab
 
 <p align="center">
-  <img src="https://project-pragya-ui.onrender.com/favicon.svg" width="120" height="120" alt="PRAGYA Logo">
+  <img src="assets/logo.svg" width="200" height="200" alt="PRAGYA Logo">
 </p>
 
 > *Every child deserves a science lab. PRAGYA puts one in their pocket.*
