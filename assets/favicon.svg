@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="letterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B00"/>
+      <stop offset="100%" style="stop-color:#FFB347"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="64" height="64" fill="#110A00"/>
+  
+  <!-- Devanagari Letter 'प' - Simplified for favicon -->
+  <g transform="translate(12, 10)">
+    <rect x="8" y="0" width="5" height="32" fill="url(#letterGradient)"/>
+    <path d="M8 20 Q8 32 18 32 Q28 32 28 20 L28 14 L36 14 L36 8 L28 8 L28 4 L8 4 L8 14 L18 14 L18 20 Z" fill="url(#letterGradient)"/>
+    <rect x="4" y="0" width="30" height="4" fill="url(#letterGradient)"/>
+  </g>
+  
+  <!-- Tilted Electron Orbital -->
+  <ellipse cx="46" cy="28" rx="12" ry="5" fill="none" stroke="#FFB347" stroke-width="1.5" transform="rotate(-30 46 28)"/>
+  
+  <!-- Electron dot -->
+  <circle cx="53" cy="21" r="2" fill="#FFB347"/>
+  
+  <!-- Star accent -->
+  <path d="M52 8 L53.5 11 L57 12 L53.5 13 L52 16 L50.5 13 L47 12 L50.5 11 Z" fill="#FFB347"/>
+</svg>
