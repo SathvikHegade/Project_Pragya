@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
+import { EXPERIMENTS } from '../utils/experiments'
 
 const EDU_RESPONSES = {
   pendulum: {
@@ -33,12 +34,54 @@ const EDU_RESPONSES = {
   }
 }
 
+const DEFAULT_RESPONSES = {
+  explain: 'This experiment explores a key concept. Use the controls to change one variable at a time and observe the outcome.',
+  hint: 'Try a small change first, then a large change. Record what changes and what stays the same.',
+  formula: 'Check the theory section for formulas and key relationships.',
+  quiz: 'Quiz: What variable has the biggest effect on the outcome? Why?'
+}
+
+function toLabel(text) {
+  return text
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (s) => s.toUpperCase())
+}
+
+function extractFormula(notes) {
+  if (!notes) return ''
+  const lines = notes.split(/\n|\.|;/).map((s) => s.trim()).filter(Boolean)
+  const formulaLine = lines.find((line) => line.includes('=') || line.includes('->') || line.includes('→'))
+  return formulaLine || ''
+}
+
+function buildResponses(exp, variables) {
+  if (!exp) return DEFAULT_RESPONSES
+  const variableKeys = Object.keys(exp.variables || {})
+  const variableHint = variableKeys.length
+    ? `Try changing ${variableKeys.slice(0, 2).map(toLabel).join(' and ')} one at a time. Current: ${variableKeys.map((k) => `${toLabel(k)}=${variables?.[k] ?? ''}`).join(', ')}`
+    : 'Try changing one variable at a time and observe the outcome.'
+
+  const formulaLine = extractFormula(exp.detailedNotes)
+  const quizItem = (exp.vivaQuestions || [])[0]
+
+  return {
+    explain: exp.detailedNotes || exp.description || DEFAULT_RESPONSES.explain,
+    hint: variableHint,
+    formula: formulaLine ? `Formula: ${formulaLine}` : DEFAULT_RESPONSES.formula,
+    quiz: quizItem ? `Quiz: ${quizItem.q}` : DEFAULT_RESPONSES.quiz
+  }
+}
+
 export default function AITutorChat({ experimentId, variables }) {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const scrollRef = useRef(null)
-  const responses = EDU_RESPONSES[experimentId] || EDU_RESPONSES.pendulum
+  const exp = useMemo(() => EXPERIMENTS.find((e) => e.id === experimentId), [experimentId])
+  const responses = useMemo(() => {
+    if (EDU_RESPONSES[experimentId]) return EDU_RESPONSES[experimentId]
+    return buildResponses(exp, variables)
+  }, [experimentId, exp, variables])
 
   useEffect(() => {
     // Welcome message

@@ -18,11 +18,39 @@ const MOCK_QUIZ = [
 
 const STREAK_DAYS = [true, true, true, false, true, true, false]
 
+const TEACHER_STATS = [
+  { icon: '👥', val: '48', label: 'Total Students', pct: 80 },
+  { icon: '🏫', val: '3', label: 'Active Classes', pct: 60 },
+  { icon: '⭐', val: '78%', label: 'Avg Class Score', pct: 78 },
+  { icon: '⚠️', val: '6', label: 'At Risk', pct: 30 },
+]
+
+const TEACHER_CLASSES = [
+  { icon: '🏫', title: 'Class 9 · Physics', meta: '32 students · Avg 76%' },
+  { icon: '🏫', title: 'Class 10 · Physics', meta: '28 students · Avg 81%' },
+  { icon: '🏫', title: 'Class 11 · Physics', meta: '22 students · Avg 74%' },
+]
+
+const TEACHER_ALERTS = [
+  { icon: '⚠️', title: 'Refraction of Light', meta: '3 students scored below 50% in the last quiz' },
+  { icon: '📌', title: 'Inactive Students', meta: '2 students inactive for 7+ days in Class 9' },
+  { icon: '🏆', title: 'Top Performer', meta: 'Rohan Kumar · 94% average' },
+]
+
+const TEACHER_TASKS = [
+  { icon: '📝', title: 'Review Observations', meta: 'Check latest lab notes from Class 10' },
+  { icon: '📣', title: 'Send Nudges', meta: 'Reach out to students marked at risk' },
+  { icon: '🧪', title: 'Assign Lab', meta: 'Create a new activity for Class 11' },
+]
+
 export default function Dashboard() {
   const { user } = useAuth()
   const { t } = useTheme()
   const [quizAnswer, setQuizAnswer] = useState(null)
   const [aiMessage, setAiMessage] = useState("Welcome back! Based on your progress, I recommend trying the Acid-Base Indicators experiment next. You're close to mastering this concept!")
+  const [teacherMessage, setTeacherMessage] = useState('Welcome back! Today’s priority is to check students struggling with Refraction and send quick nudges.')
+
+  const isTeacher = (user?.role || '').toLowerCase() === 'teacher'
 
   const completedCount = MOCK_PROGRESS.filter(p => p.completed).length
   const totalScore = Math.round(MOCK_PROGRESS.filter(p => p.score > 0).reduce((s, p) => s + p.score, 0) / MOCK_PROGRESS.filter(p => p.score > 0).length)
@@ -31,6 +59,138 @@ export default function Dashboard() {
   const recentExps = MOCK_PROGRESS
     .filter(p => p.lastPlayed)
     .map(p => ({ ...EXPERIMENTS.find(e => e.id === p.id), ...p }))
+
+  if (isTeacher) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.mesh} />
+
+        <div className={styles.container}>
+          <div className={`${styles.header} animate-fade-in`}>
+            <div>
+              <h1 className={styles.greeting}>{t(`dash.greeting${getGreeting()}`)}, {user?.name?.split(' ')[0] || 'Teacher'}!</h1>
+              <p className={styles.subtitle}>{user?.subject || 'Physics'} · {user?.school || 'Government School'}</p>
+            </div>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <Link to="/teacher" className="btn-primary" style={{ padding: '12px 28px' }}>
+                📊 Open Teacher Portal
+              </Link>
+              <Link to="/labs" className="btn-secondary" style={{ padding: '12px 24px' }}>
+                🔬 Preview Labs
+              </Link>
+            </div>
+          </div>
+
+          <div className={`${styles.statsRow} animate-fade-in stagger-1`}>
+            {TEACHER_STATS.map((s, i) => (
+              <div key={i} className={`${styles.statCard} glass-card`}>
+                <div className={styles.statIcon}>{s.icon}</div>
+                <div className={styles.statVal}>{s.val}</div>
+                <div className={styles.statLab}>{s.label}</div>
+                <div className="progress-bar" style={{ marginTop: 16 }}>
+                  <div className="progress-fill" style={{ width: `${s.pct}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.mainGrid}>
+            <div className={styles.leftCol}>
+              <div className={`${styles.aiCard} animate-fade-in stagger-2`}>
+                <div className={styles.aiHeader}>
+                  <div className={styles.aiAvatar}>🤖</div>
+                  <div>
+                    <div className={styles.aiName}>Teaching Assistant</div>
+                    <div className={styles.aiStatus}>
+                      <span className={styles.statusDot} />
+                      Online · Class insights ready
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.aiMessage}>{teacherMessage}</div>
+                <div className={styles.aiActions}>
+                  <Link to="/teacher" className="btn-primary" style={{ fontSize: '0.9rem', padding: '10px 20px' }}>
+                    Open Analytics
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </Link>
+                  <button
+                    className="btn-secondary"
+                    style={{ fontSize: '0.9rem', padding: '10px 20px' }}
+                    onClick={() => setTeacherMessage('Tip: Use the heatmap to spot weak experiments, then assign a quick recap lab.')}
+                  >
+                    Get a Tip
+                  </button>
+                </div>
+              </div>
+
+              <div className={`${styles.quizCard} animate-fade-in stagger-3`}>
+                <div className={styles.quizHeader}>
+                  <span>Today’s Focus</span>
+                  <span className="badge badge-physics">Classes</span>
+                </div>
+                <div className={styles.expList}>
+                  {TEACHER_TASKS.map((task, i) => (
+                    <div key={i} className={styles.expItem} style={{ cursor: 'default' }}>
+                      <span className={styles.expItemIcon}>{task.icon}</span>
+                      <div className={styles.expItemInfo}>
+                        <div className={styles.expItemTitle}>{task.title}</div>
+                        <div className={styles.expItemMeta}>{task.meta}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.rightCol}>
+              <div className={`${styles.section} animate-fade-in stagger-2`}>
+                <div className={styles.sectionHead}>
+                  <h3>My Classes</h3>
+                  <Link to="/teacher" style={{ fontSize: '0.85rem', color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 500 }}>
+                    View all
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginLeft: 4 }}>
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </Link>
+                </div>
+                <div className={styles.expList}>
+                  {TEACHER_CLASSES.map((c, i) => (
+                    <Link key={i} to="/teacher" className={styles.expItem}>
+                      <span className={styles.expItemIcon}>{c.icon}</span>
+                      <div className={styles.expItemInfo}>
+                        <div className={styles.expItemTitle}>{c.title}</div>
+                        <div className={styles.expItemMeta}>{c.meta}</div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className={`${styles.section} animate-fade-in stagger-3`}>
+                <div className={styles.sectionHead}>
+                  <h3>Alerts & Insights</h3>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 500 }}>Updated today</span>
+                </div>
+                <div className={styles.expList}>
+                  {TEACHER_ALERTS.map((a, i) => (
+                    <div key={i} className={styles.expItem} style={{ cursor: 'default' }}>
+                      <span className={styles.expItemIcon}>{a.icon}</span>
+                      <div className={styles.expItemInfo}>
+                        <div className={styles.expItemTitle}>{a.title}</div>
+                        <div className={styles.expItemMeta}>{a.meta}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.page}>

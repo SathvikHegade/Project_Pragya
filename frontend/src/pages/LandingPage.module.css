@@ -661,20 +661,37 @@
 .footerBottom {
   display: flex;
   flex-direction: column;
-  align-items: center;
   padding-top: 24px;
   font-size: 12px;
   color: var(--text-tertiary);
-  gap: 10px;
+  gap: 12px;
+}
+
+.footerTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
 }
 
 .footerMeta {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 100%;
   gap: 6px;
   text-align: left;
+  max-width: 640px;
+}
+
+.footerTitle {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.footerTagline {
+  color: var(--text-tertiary);
+  line-height: 1.6;
 }
 
 .footerPolicies {
@@ -699,6 +716,13 @@
 .footerBuiltBy {
   font-size: 12px;
   color: var(--text-tertiary);
+}
+
+@media (max-width: 768px) {
+  .footerTopRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 1024px) {

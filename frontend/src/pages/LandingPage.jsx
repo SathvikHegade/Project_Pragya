@@ -333,9 +333,14 @@ export default function LandingPage() {
           </div>
 
           <div className={styles.footerBottom}>
-            <div className={styles.footerMeta}>
-              <span>Project PRAGYA</span>
-              <span>"Every child deserves a science lab. PRAGYA puts one in their pocket."</span>
+            <div className={styles.footerTopRow}>
+              <div className={styles.footerMeta}>
+                <span className={styles.footerTitle}>Project PRAGYA</span>
+                <span className={styles.footerTagline}>
+                  "Every child deserves a science lab. PRAGYA puts one in their pocket."
+                </span>
+              </div>
+              <div className={styles.footerBuiltBy}>Built by Sathvik Hegade</div>
             </div>
             <div className={styles.footerDivider} />
             <div className={styles.footerPolicies}>
@@ -344,7 +349,6 @@ export default function LandingPage() {
               <span>User Agreement</span>
               <span>Accessibility</span>
             </div>
-            <div className={styles.footerBuiltBy}>Built by Sathvik Hegade</div>
           </div>
         </div>
       </footer>

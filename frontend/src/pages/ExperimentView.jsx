@@ -14,6 +14,11 @@ const OhmsLawSim = lazy(() => import('../simulations/OhmsLawSim'))
 const PhotosynthesisSim = lazy(() => import('../simulations/PhotosynthesisSim'))
 const ProjectileSim = lazy(() => import('../simulations/ProjectileSim'))
 const AcidBaseSim = lazy(() => import('../simulations/AcidBaseSim'))
+const MitosisSim = lazy(() => import('../simulations/MitosisSim'))
+const ElectrolysisSim = lazy(() => import('../simulations/ElectrolysisSim'))
+const RefractionSim = lazy(() => import('../simulations/RefractionSim'))
+const OsmosisSim = lazy(() => import('../simulations/OsmosisSim'))
+const CalorimetrySim = lazy(() => import('../simulations/CalorimetrySim'))
 
 const SIM_MAP = {
   pendulum: PendulumSim,
@@ -21,6 +26,11 @@ const SIM_MAP = {
   photosynthesis: PhotosynthesisSim,
   projectile: ProjectileSim,
   'acid-base': AcidBaseSim,
+  mitosis: MitosisSim,
+  electrolysis: ElectrolysisSim,
+  refraction: RefractionSim,
+  osmosis: OsmosisSim,
+  calorimetry: CalorimetrySim,
 }
 
 const GRAPH_CONFIG = {
@@ -29,6 +39,11 @@ const GRAPH_CONFIG = {
   photosynthesis: { label: 'O₂ Rate', unit: '%', color: '#059669' },
   projectile: { label: 'Height', unit: 'm', color: '#D97706' },
   'acid-base': { label: 'pH Value', unit: '', color: '#7C3AED' },
+  mitosis: { label: 'Stage Progress', unit: '%', color: '#10B981' },
+  electrolysis: { label: 'Gas Rate', unit: 'mL/s', color: '#3B82F6' },
+  refraction: { label: 'Refracted Angle', unit: 'deg', color: '#00D4FF' },
+  osmosis: { label: 'Cell Volume', unit: '%', color: '#10B981' },
+  calorimetry: { label: 'Temperature', unit: 'C', color: '#D97706' },
 }
 
 function getSubjectBadge(subject) {

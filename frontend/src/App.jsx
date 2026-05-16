@@ -5,6 +5,7 @@ import { ThemeProvider } from './hooks/useTheme'
 import Navbar from './components/Navbar'
 import LoadingScreen from './components/LoadingScreen'
 import ProtectedRoute from './components/ProtectedRoute'
+import AppFooter from './components/AppFooter'
 
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -29,22 +30,22 @@ export default function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/dashboard" element={
-                  <ProtectedRoute><Navbar /><Dashboard /></ProtectedRoute>
+                  <ProtectedRoute><Navbar /><Dashboard /><AppFooter /></ProtectedRoute>
                 } />
                 <Route path="/labs" element={
-                  <ProtectedRoute><Navbar /><LabLibrary /></ProtectedRoute>
+                  <ProtectedRoute><Navbar /><LabLibrary /><AppFooter /></ProtectedRoute>
                 } />
                 <Route path="/experiment/:id" element={
                   <ProtectedRoute><Navbar /><ExperimentView /></ProtectedRoute>
                 } />
                 <Route path="/teacher" element={
-                  <ProtectedRoute role="teacher"><Navbar /><TeacherDashboard /></ProtectedRoute>
+                  <ProtectedRoute role="teacher"><Navbar /><TeacherDashboard /><AppFooter /></ProtectedRoute>
                 } />
                 <Route path="/profile" element={
-                  <ProtectedRoute><Navbar /><StudentProfile /></ProtectedRoute>
+                  <ProtectedRoute><Navbar /><StudentProfile /><AppFooter /></ProtectedRoute>
                 } />
                 <Route path="/notes-viva" element={
-                  <ProtectedRoute><Navbar /><NotesVivaPage /></ProtectedRoute>
+                  <ProtectedRoute><Navbar /><NotesVivaPage /><AppFooter /></ProtectedRoute>
                 } />
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
