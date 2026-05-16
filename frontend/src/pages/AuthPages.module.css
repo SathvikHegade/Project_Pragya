@@ -64,21 +64,17 @@
 }
 
 .logoMark {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, var(--cyan), var(--violet));
-  border-radius: var(--radius-md);
+  width: 70px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
   margin: 0 auto 28px;
-  box-shadow: 0 8px 25px rgba(56, 189, 248, 0.3);
 }
 
 .logoMark svg {
-  width: 30px;
-  height: 30px;
+  width: 60px;
+  height: 60px;
 }
 
 .title {

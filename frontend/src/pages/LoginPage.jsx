@@ -58,10 +58,19 @@ export function LoginPage() {
 
       <div className={styles.card}>
         <div className={styles.logoMark}>
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" opacity="0.9"/>
-            <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="60" height="60" viewBox="0 0 50 50" fill="none">
+            <rect width="50" height="50" rx="10" fill="#110A00"/>
+            <ellipse cx="25" cy="20" rx="18" ry="8" fill="none" stroke="#FFB347" strokeWidth="2" transform="rotate(-20 25 20)" opacity="0.95"/>
+            <circle cx="41" cy="11" r="2.5" fill="#FFB347"/>
+            <text x="25" y="32" fontFamily="'Noto Sans Devanagari', Arial, sans-serif" fontSize="26" fontWeight="700" fill="url(#loginGradient)" textAnchor="middle">प</text>
+            <path d="M40 6 L41.5 8 L44 9 L41.5 10 L40 12 L38.5 10 L36 9 L38.5 8 Z" fill="#FF6B00"/>
+            <circle cx="18" cy="38" r="1.5" fill="#FFB347" opacity="0.6"/>
+            <defs>
+              <linearGradient id="loginGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FF6B00"/>
+                <stop offset="100%" stopColor="#FFB347"/>
+              </linearGradient>
+            </defs>
           </svg>
         </div>
         <h1 className={styles.title}>{t('login.title')}</h1>
@@ -168,10 +177,19 @@ export function RegisterPage() {
 
       <div className={styles.card}>
         <div className={styles.logoMark}>
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" opacity="0.9"/>
-            <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="60" height="60" viewBox="0 0 50 50" fill="none">
+            <rect width="50" height="50" rx="10" fill="#110A00"/>
+            <ellipse cx="25" cy="20" rx="18" ry="8" fill="none" stroke="#FFB347" strokeWidth="2" transform="rotate(-20 25 20)" opacity="0.95"/>
+            <circle cx="41" cy="11" r="2.5" fill="#FFB347"/>
+            <text x="25" y="32" fontFamily="'Noto Sans Devanagari', Arial, sans-serif" fontSize="26" fontWeight="700" fill="url(#regGradient)" textAnchor="middle">प</text>
+            <path d="M40 6 L41.5 8 L44 9 L41.5 10 L40 12 L38.5 10 L36 9 L38.5 8 Z" fill="#FF6B00"/>
+            <circle cx="18" cy="38" r="1.5" fill="#FFB347" opacity="0.6"/>
+            <defs>
+              <linearGradient id="regGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FF6B00"/>
+                <stop offset="100%" stopColor="#FFB347"/>
+              </linearGradient>
+            </defs>
           </svg>
         </div>
         <h1 className={styles.title}>{t('register.title')}</h1>
