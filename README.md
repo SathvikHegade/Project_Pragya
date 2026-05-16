@@ -6,8 +6,8 @@
 
 > *Every child deserves a science lab. PRAGYA puts one in their pocket.*
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit-2ecc71?style=flat&logo=firefox)](https://project-pragya-ui.onrender.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-3498db?style=flat)](https://opensource.org/licenses/MIT)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit-FF6B00?style=flat&logo=firefox)](https://project-pragya-ui.onrender.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-FFB347?style=flat)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/Status-Production-27ae60?style=flat)](#)
 
 ---
