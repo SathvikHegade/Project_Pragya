@@ -118,6 +118,55 @@ cp .env.example .env
 
 ---
 
+## File Structure
+
+```
+pragya/
+├── frontend/                        # React 18 + Vite SPA
+│   ├── src/
+│   │   ├── pages/                   # Route pages (Login, Dashboard, Lab, etc.)
+│   │   ├── components/             # Reusable UI (Navbar, AITutorChat, etc.)
+│   │   ├── simulations/            # Physics/Chemistry/Biology simulation engines
+│   │   │   ├── CalorimetrySim.jsx
+│   │   │   ├── ElectrolysisSim.jsx
+│   │   │   ├── MitosisSim.jsx
+│   │   │   ├── OhmsLawSim.jsx
+│   │   │   ├── OsmosisSim.jsx
+│   │   │   ├── PendulumSim.jsx
+│   │   │   ├── PhotosynthesisSim.jsx
+│   │   │   ├── ProjectileSim.jsx
+│   │   │   ├── RefractionSim.jsx
+│   │   │   └── AcidBaseSim.jsx
+│   │   ├── hooks/                  # Custom hooks (useAuth, useTheme)
+│   │   ├── utils/                  # API client, translations, experiment data
+│   │   └── styles/                 # Global CSS tokens and utilities
+│   ├── public/                     # Static assets
+│   ├── Dockerfile                  # Multi-stage build with Nginx
+│   ├── nginx.conf                  # SPA routing + API proxy
+│   ├── vite.config.js
+│   └── package.json
+│
+├── backend/                         # FastAPI REST API
+│   ├── main.py                     # App entry, CORS, lifespan, routers
+│   ├── requirements.txt
+│   ├── .env.example
+│   ├── Dockerfile
+│   ├── routers/
+│   │   ├── auth.py                 # Login, register, JWT validation
+│   │   ├── experiments.py          # Experiment CRUD and session tracking
+│   │   ├── student.py              # Progress, quizzes, profile endpoints
+│   │   ├── teacher.py              # Class overview, heatmap, alerts
+│   │   └── ai_tutor.py             # Hint generation, gap analysis
+│   └── utils/
+│       ├── database.py             # Async SQLite initialization
+│       └── auth.py                 # JWT token creation and verification
+│
+├── docker-compose.yml              # Full-stack orchestration
+└── README.md
+```
+
+---
+
 ## Configuration
 
 | Variable | Default | Description |
