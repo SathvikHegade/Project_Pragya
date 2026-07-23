@@ -1,0 +1,263 @@
+.page {
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 28px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.leftCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 96px;
+}
+
+.rightCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profileCard {
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.avatarBig {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: white;
+  margin: 0 auto 16px;
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+}
+
+.profileName {
+  font-family: 'Inter', sans-serif;
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.profileRole {
+  font-size: 13px;
+  color: var(--cyan);
+  background: var(--cyan-light);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  border-radius: 100px;
+  padding: 3px 12px;
+  display: inline-block;
+  text-transform: capitalize;
+  margin-bottom: 20px;
+}
+
+.profileMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.metaRow span:first-child {
+  font-size: 16px;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fieldLabel {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.statsCard {
+  padding: 24px;
+}
+
+.statItem {
+  margin-bottom: 14px;
+}
+
+.statItem:last-child {
+  margin-bottom: 0;
+}
+
+.secTitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.card {
+  padding: 24px;
+}
+
+.achieveGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.achieve {
+  padding: 18px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.achieve:not(.achieveLocked):hover {
+  border-color: var(--border-glow);
+  box-shadow: 0 4px 16px var(--cyan-light);
+}
+
+.achieveLocked {
+  opacity: 0.45;
+  filter: grayscale(0.5);
+}
+
+.achieveIcon {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.achieveTitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.achieveDesc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.earnedBadge {
+  font-size: 11px;
+  color: var(--green);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+.lockedBadge {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.historyItem:hover {
+  border-color: var(--border-glow);
+}
+
+.histInfo {
+  flex: 1;
+}
+
+.histTitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.histMeta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.histScore {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .leftCol {
+    position: static;
+  }
+  .achieveGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .achieveGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,43 @@
+<svg width="512" viewBox="0 0 680 520" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>PRAGYA Logo Fixed Wordmark</title>
+  <desc>PRAGYA logo with orange gradient wordmark</desc>
+
+  <defs>
+    <linearGradient id="og1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B00"/>
+      <stop offset="100%" stop-color="#FFB347"/>
+    </linearGradient>
+    <linearGradient id="og2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF6B00"/>
+      <stop offset="100%" stop-color="#FFB347"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon background -->
+  <rect x="240" y="60" width="200" height="200" rx="44" fill="#110A00"/>
+
+  <!-- Orbital ring -->
+  <ellipse cx="340" cy="160" rx="88" ry="32" fill="none" stroke="#FFB347" stroke-width="2" transform="rotate(-20 340 160)" opacity="0.95"/>
+
+  <!-- Electron dot -->
+  <circle cx="418" cy="138" r="5.5" fill="#FFB347"/>
+
+  <!-- Sanskrit letter प -->
+  <text x="340" y="208" font-family="'Noto Sans Devanagari', 'Arial Unicode MS', serif" font-size="118" font-weight="700" fill="url(#og1)" text-anchor="middle">प</text>
+
+  <!-- Sharp 4-point star -->
+  <path d="M408 82 L412 94 L424 98 L412 102 L408 114 L404 102 L392 98 L404 94 Z" fill="#FF6B00"/>
+
+  <!-- Small accent dot -->
+  <circle cx="262" cy="238" r="4" fill="#FFB347" opacity="0.6"/>
+
+  <!-- Wordmark — orange gradient -->
+  <text x="340" y="312" font-family="'Arial', sans-serif" font-size="30" font-weight="700" fill="url(#og2)" text-anchor="middle" letter-spacing="12">PRAGYA</text>
+
+  <!-- Gradient underline -->
+  <rect x="270" y="322" width="140" height="3" rx="2" fill="url(#og2)"/>
+
+  <!-- Tagline -->
+  <text x="340" y="356" font-family="'Arial', sans-serif" font-size="12" fill="#888" text-anchor="middle" letter-spacing="3">VIRTUAL STEM LAB</text>
+
+</svg>

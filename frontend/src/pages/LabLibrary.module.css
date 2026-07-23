@@ -1,0 +1,499 @@
+.page {
+  min-height: 100vh;
+  padding-top: 90px;
+  position: relative;
+  background: var(--surface-1);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  line-height: 1.1;
+}
+
+.sub {
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.filterBar {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 32px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+}
+
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 18px;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.searchInput {
+  padding-left: 52px !important;
+  font-size: 16px !important;
+  background: var(--surface-2) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.filterGroups {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filterMeta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.resultCount {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  color: var(--red);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.clearBtn:hover {
+  background: var(--danger-muted);
+  transform: scale(1.05);
+}
+
+.viewToggle {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.viewBtn {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewBtn:hover {
+  border-color: var(--cyan);
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.viewBtn.viewActive {
+  background: var(--cyan-muted);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.subjectTabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.subTab {
+  padding: 12px 28px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 100px;
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.subTab:hover {
+  border-color: var(--cyan);
+  color: var(--text-primary);
+  transform: translateY(-3px);
+}
+
+.subTab.subTabActive {
+  transform: translateY(-3px);
+}
+
+.subTab.subAll.subTabActive {
+  background: var(--cyan-muted);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.subTab.subPhysics.subTabActive,
+.subTab.subPhysics:hover {
+  background: var(--cyan-muted);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: var(--cyan);
+}
+
+.subTab.subChemistry.subTabActive,
+.subTab.subChemistry:hover {
+  background: var(--violet-muted);
+  border-color: rgba(129, 140, 248, 0.4);
+  color: var(--violet);
+}
+
+.subTab.subBiology.subTabActive,
+.subTab.subBiology:hover {
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: var(--green);
+}
+
+.subjectIcon {
+  display: flex;
+  align-items: center;
+}
+
+.expGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 28px;
+}
+
+.expCard {
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.35s ease;
+  position: relative;
+}
+
+.expCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.expCard > * {
+  position: relative;
+  z-index: 1;
+}
+
+.expCard:hover {
+  transform: translateY(-10px);
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 25px 60px rgba(56, 189, 248, 0.12);
+}
+
+.expCard.cardPhysics:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 25px 60px rgba(56, 189, 248, 0.15);
+}
+
+.expCard.cardChemistry:hover {
+  border-color: rgba(129, 140, 248, 0.4);
+  box-shadow: 0 25px 60px rgba(129, 140, 248, 0.15);
+}
+
+.expCard.cardBiology:hover {
+  border-color: rgba(52, 211, 153, 0.4);
+  box-shadow: 0 25px 60px rgba(52, 211, 153, 0.15);
+}
+
+.cardTop {
+  padding: 32px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-default);
+  position: relative;
+  overflow: hidden;
+}
+
+.cardTop::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+.expCardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  transition: transform 0.3s ease;
+}
+
+.expCard:hover .expCardIcon {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.cardBody {
+  padding: 28px;
+  flex: 1;
+}
+
+.expCardTitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.expCardDesc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.expCardMeta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.metaTag {
+  padding: 6px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.diffBeginner {
+  color: var(--green) !important;
+  border-color: rgba(52, 211, 153, 0.2) !important;
+  background: var(--green-subtle) !important;
+}
+
+.diffIntermediate {
+  color: var(--amber) !important;
+  border-color: rgba(251, 191, 36, 0.2) !important;
+  background: var(--amber-subtle) !important;
+}
+
+.diffAdvanced {
+  color: var(--red) !important;
+  border-color: rgba(248, 113, 113, 0.2) !important;
+  background: rgba(248, 113, 113, 0.06) !important;
+}
+
+.expCardChapter {
+  font-size: 14px;
+  color: var(--text-muted);
+  padding-top: 16px;
+  border-top: 1px solid var(--border-default);
+}
+
+.cardFooter {
+  padding: 18px 28px;
+  border-top: 1px solid var(--border-default);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.03), transparent);
+}
+
+.startBtn {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cyan);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.expCard:hover .startBtn {
+  gap: 14px;
+}
+
+.expCard:hover .startBtn svg {
+  transform: translateX(4px);
+}
+
+.expList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.expRow {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 28px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.expRow:hover {
+  border-color: var(--cyan);
+  transform: translateX(12px);
+  box-shadow: 0 15px 40px var(--cyan-muted);
+}
+
+.rowInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.rowMeta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 120px 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.emptyIcon {
+  color: var(--text-muted);
+  opacity: 0.4;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@media (max-width: 1024px) {
+  .expGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding-top: 80px;
+  }
+  .container {
+    padding: 32px 20px;
+  }
+  .filterGroups {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .filterMeta {
+    width: 100%;
+  }
+  .viewToggle {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+  .expGrid {
+    grid-template-columns: 1fr;
+  }
+  .expRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .rowMeta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .title {
+    font-size: 2.25rem;
+  }
+  .subjectTabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+  }
+  .subTab {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 24px 16px;
+  }
+  .filterBar {
+    padding: 20px;
+  }
+  .cardTop {
+    padding: 24px 20px;
+  }
+  .cardBody {
+    padding: 20px;
+  }
+  .cardFooter {
+    padding: 14px 20px;
+  }
+}
