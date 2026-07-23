@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
-import uuid
+import uuid, json
 from utils.database import get_db
 from utils.auth import get_current_user
 
@@ -58,34 +58,28 @@ async def get_experiment(experiment_id: str, current_user=Depends(get_current_us
 
 @router.post("/{experiment_id}/start")
 async def start_session(experiment_id: str, body: StartSession, current_user=Depends(get_current_user), db=Depends(get_db)):
-    import json
     session_id = str(uuid.uuid4())
     await db.execute(
-        "INSERT INTO experiment_sessions (id, user_id, experiment_id, variables) VALUES (?,?,?,?)",
-        (session_id, current_user["id"], experiment_id, json.dumps(body.variables))
+        "INSERT INTO experiment_sessions (id, user_id, experiment_id, variables) VALUES ($1,$2,$3,$4)",
+        session_id, current_user["id"], experiment_id, json.dumps(body.variables)
     )
-    await db.commit()
     return {"session_id": session_id, "status": "started"}
 
 @router.post("/{experiment_id}/submit")
 async def submit_session(experiment_id: str, body: SubmitSession, current_user=Depends(get_current_user), db=Depends(get_db)):
-    import json
-    from datetime import datetime
     session_id = str(uuid.uuid4())
     await db.execute(
-        "INSERT INTO experiment_sessions (id, user_id, experiment_id, variables, observations, score, completed, duration_seconds, completed_at) VALUES (?,?,?,?,?,?,?,?,?)",
-        (session_id, current_user["id"], experiment_id, json.dumps(body.variables), json.dumps(body.observations), body.score, 1, body.duration_seconds, datetime.utcnow().isoformat())
+        "INSERT INTO experiment_sessions (id, user_id, experiment_id, variables, observations, score, completed, duration_seconds, completed_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+        session_id, current_user["id"], experiment_id, json.dumps(body.variables), json.dumps(body.observations), body.score, 1, body.duration_seconds, datetime.utcnow().isoformat()
     )
-    await db.commit()
     return {"session_id": session_id, "score": body.score, "status": "completed"}
 
 @router.get("/{experiment_id}/observations")
 async def list_observations(experiment_id: str, current_user=Depends(get_current_user), db=Depends(get_db)):
-    async with db.execute(
-        "SELECT id, text, created_at FROM observations WHERE user_id=? AND experiment_id=? ORDER BY created_at ASC",
-        (current_user["id"], experiment_id)
-    ) as cur:
-        rows = await cur.fetchall()
+    rows = await db.fetch(
+        "SELECT id, text, created_at FROM observations WHERE user_id=$1 AND experiment_id=$2 ORDER BY created_at ASC",
+        current_user["id"], experiment_id
+    )
     return {"observations": [dict(r) for r in rows]}
 
 @router.post("/{experiment_id}/observations")
@@ -96,8 +90,7 @@ async def add_observation(experiment_id: str, body: ObservationCreate, current_u
     obs_id = str(uuid.uuid4())
     created_at = datetime.utcnow().isoformat()
     await db.execute(
-        "INSERT INTO observations (id, user_id, experiment_id, text, created_at) VALUES (?,?,?,?,?)",
-        (obs_id, current_user["id"], experiment_id, text, created_at)
+        "INSERT INTO observations (id, user_id, experiment_id, text, created_at) VALUES ($1,$2,$3,$4,$5)",
+        obs_id, current_user["id"], experiment_id, text, created_at
     )
-    await db.commit()
     return {"id": obs_id, "experiment_id": experiment_id, "text": text, "created_at": created_at}

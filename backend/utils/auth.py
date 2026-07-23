@@ -1,5 +1,6 @@
 import jwt
 import bcrypt
+import asyncio
 import os
 from datetime import datetime, timedelta
 from fastapi import HTTPException, status, Depends
@@ -11,11 +12,17 @@ ACCESS_TOKEN_EXPIRE_HOURS = 72
 
 security = HTTPBearer()
 
-def hash_password(password: str) -> str:
+def hash_password_sync(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
-def verify_password(password: str, hashed: str) -> bool:
+def verify_password_sync(password: str, hashed: str) -> bool:
     return bcrypt.checkpw(password.encode(), hashed.encode())
+
+async def hash_password(password: str) -> str:
+    return await asyncio.to_thread(hash_password_sync, password)
+
+async def verify_password(password: str, hashed: str) -> bool:
+    return await asyncio.to_thread(verify_password_sync, password, hashed)
 
 def create_access_token(user_id: str, role: str) -> str:
     payload = {

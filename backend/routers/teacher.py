@@ -7,20 +7,17 @@ router = APIRouter()
 
 @router.get("/overview")
 async def class_overview(current_user=Depends(require_teacher), db=Depends(get_db)):
-    async with db.execute("SELECT COUNT(*) as total FROM users WHERE role='student'") as cur:
-        total = (await cur.fetchone())["total"]
-    async with db.execute("SELECT COUNT(DISTINCT user_id) as active FROM experiment_sessions WHERE date(started_at) >= date('now', '-7 days')") as cur:
-        active = (await cur.fetchone())["active"]
-    async with db.execute("SELECT AVG(score) as avg FROM experiment_sessions WHERE completed=1") as cur:
-        avg = (await cur.fetchone())["avg"] or 0
+    total = (await db.fetchrow("SELECT COUNT(*) as total FROM users WHERE role='student'"))["total"]
+    active = (await db.fetchrow("SELECT COUNT(DISTINCT user_id) as active FROM experiment_sessions WHERE started_at >= NOW() - INTERVAL '7 days'"))["active"]
+    avg = (await db.fetchrow("SELECT AVG(score) as avg FROM experiment_sessions WHERE completed=1"))["avg"] or 0
     return {"total_students": total, "active_this_week": active, "class_avg_score": round(avg, 1)}
 
 @router.get("/students")
 async def get_students(current_user=Depends(require_teacher), db=Depends(get_db)):
-    async with db.execute(
-        "SELECT u.id, u.name, u.class, u.school, COUNT(es.id) as sessions, AVG(es.score) as avg_score FROM users u LEFT JOIN experiment_sessions es ON u.id=es.user_id WHERE u.role='student' GROUP BY u.id"
-    ) as cur:
-        rows = await cur.fetchall()
+    rows = await db.fetch(
+        "SELECT u.id, u.name, u.class, u.school, COUNT(es.id) as sessions, AVG(es.score) as avg_score "
+        "FROM users u LEFT JOIN experiment_sessions es ON u.id=es.user_id WHERE u.role='student' GROUP BY u.id"
+    )
     return {"students": [dict(r) for r in rows]}
 
 @router.get("/observations")
@@ -39,42 +36,42 @@ async def get_observations(
     )
     clauses = []
     params = []
+    idx = 1
     if student_id:
-        clauses.append("o.user_id = ?")
+        clauses.append(f"o.user_id = ${idx}")
         params.append(student_id)
+        idx += 1
     if experiment_id:
-        clauses.append("o.experiment_id = ?")
+        clauses.append(f"o.experiment_id = ${idx}")
         params.append(experiment_id)
+        idx += 1
     if clauses:
         query += " WHERE " + " AND ".join(clauses)
-    query += " ORDER BY o.created_at DESC LIMIT ?"
+    query += f" ORDER BY o.created_at DESC LIMIT ${idx}"
     params.append(safe_limit)
 
-    async with db.execute(query, params) as cur:
-        rows = await cur.fetchall()
+    rows = await db.fetch(query, *params)
     return {"observations": [dict(r) for r in rows]}
 
 @router.get("/heatmap")
 async def get_heatmap(current_user=Depends(require_teacher), db=Depends(get_db)):
-    async with db.execute(
+    rows = await db.fetch(
         "SELECT user_id, experiment_id, MAX(score) as best_score FROM experiment_sessions GROUP BY user_id, experiment_id"
-    ) as cur:
-        rows = await cur.fetchall()
+    )
     return {"heatmap": [dict(r) for r in rows]}
 
 @router.get("/alerts")
 async def get_alerts(current_user=Depends(require_teacher), db=Depends(get_db)):
     alerts = []
-    async with db.execute(
-        "SELECT u.name, u.id FROM users u WHERE u.role='student' AND u.id NOT IN (SELECT DISTINCT user_id FROM experiment_sessions WHERE date(started_at) >= date('now','-5 days'))"
-    ) as cur:
-        inactive = await cur.fetchall()
+    inactive = await db.fetch(
+        "SELECT u.name, u.id FROM users u WHERE u.role='student' AND u.id NOT IN "
+        "(SELECT DISTINCT user_id FROM experiment_sessions WHERE started_at >= NOW() - INTERVAL '5 days')"
+    )
     for s in inactive:
         alerts.append({"type": "inactive", "student": s["name"], "message": f"{s['name']} has not logged in for 5+ days"})
     return {"alerts": alerts}
 
 @router.get("/report/weekly")
 async def weekly_report(current_user=Depends(require_teacher), db=Depends(get_db)):
-    async with db.execute("SELECT COUNT(*) as sessions FROM experiment_sessions WHERE date(started_at) >= date('now','-7 days')") as cur:
-        sessions = (await cur.fetchone())["sessions"]
+    sessions = (await db.fetchrow("SELECT COUNT(*) as sessions FROM experiment_sessions WHERE started_at >= NOW() - INTERVAL '7 days'"))["sessions"]
     return {"week": "current", "total_sessions": sessions, "status": "generated"}

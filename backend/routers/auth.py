@@ -32,10 +32,9 @@ def row_to_user(row):
 
 @router.post("/login")
 async def login(req: LoginRequest, db=Depends(get_db)):
-    async with db.execute("SELECT * FROM users WHERE email = ?", (req.email,)) as cursor:
-        user = await cursor.fetchone()
+    user = await db.fetchrow("SELECT * FROM users WHERE email = $1", req.email)
 
-    if not user or not verify_password(req.password, user["password_hash"]):
+    if not user or not await verify_password(req.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     token = create_access_token(user["id"], user["role"])
@@ -43,18 +42,16 @@ async def login(req: LoginRequest, db=Depends(get_db)):
 
 @router.post("/register")
 async def register(req: RegisterRequest, db=Depends(get_db)):
-    async with db.execute("SELECT id FROM users WHERE email = ?", (req.email,)) as cursor:
-        existing = await cursor.fetchone()
+    existing = await db.fetchrow("SELECT id FROM users WHERE email = $1", req.email)
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
     user_id = str(uuid.uuid4())
-    pw_hash = hash_password(req.password)
+    pw_hash = await hash_password(req.password)
     await db.execute(
-        "INSERT INTO users (id, name, email, password_hash, role, class, school, language) VALUES (?,?,?,?,?,?,?,?)",
-        (user_id, req.name, req.email, pw_hash, req.role, req.class_name, req.school, req.language)
+        "INSERT INTO users (id, name, email, password_hash, role, class, school, language) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
+        user_id, req.name, req.email, pw_hash, req.role, req.class_name, req.school, req.language
     )
-    await db.commit()
 
     token = create_access_token(user_id, req.role)
     user = {"id": user_id, "name": req.name, "email": req.email, "role": req.role, "class": req.class_name, "school": req.school, "language": req.language}
@@ -62,8 +59,7 @@ async def register(req: RegisterRequest, db=Depends(get_db)):
 
 @router.get("/me")
 async def me(current_user=Depends(get_current_user), db=Depends(get_db)):
-    async with db.execute("SELECT * FROM users WHERE id = ?", (current_user["id"],)) as cursor:
-        user = await cursor.fetchone()
+    user = await db.fetchrow("SELECT * FROM users WHERE id = $1", current_user["id"])
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return row_to_user(user)

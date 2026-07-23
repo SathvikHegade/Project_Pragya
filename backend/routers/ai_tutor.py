@@ -79,10 +79,9 @@ async def get_hint(req: HintRequest, current_user=Depends(get_current_user), db=
 
     interaction_id = str(uuid.uuid4())
     await db.execute(
-        "INSERT INTO ai_interactions (id, user_id, experiment_id, message, response, interaction_type) VALUES (?,?,?,?,?,?)",
-        (interaction_id, current_user["id"], req.experimentId, req.context or "hint", hint_text, "hint")
+        "INSERT INTO ai_interactions (id, user_id, experiment_id, message, response, interaction_type) VALUES ($1,$2,$3,$4,$5,$6)",
+        interaction_id, current_user["id"], req.experimentId, req.context or "hint", hint_text, "hint"
     )
-    await db.commit()
 
     return {
         "hint": hint_text,
