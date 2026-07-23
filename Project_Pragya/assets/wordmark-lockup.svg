@@ -1,0 +1,42 @@
+<svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="og1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B00"/>
+      <stop offset="100%" stop-color="#FFB347"/>
+    </linearGradient>
+    <linearGradient id="og2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF6B00"/>
+      <stop offset="100%" stop-color="#FFB347"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Icon (left side) -->
+  <g transform="translate(40, 20)">
+    <!-- Icon background - dark -->
+    <rect x="0" y="0" width="160" height="160" rx="32" fill="#110A00"/>
+    
+    <!-- Orbital ring - amber -->
+    <ellipse cx="80" cy="65" rx="60" ry="22" fill="none" stroke="#FFB347" stroke-width="2" transform="rotate(-20 80 65)" opacity="0.95"/>
+    
+    <!-- Electron dot -->
+    <circle cx="128" cy="47" r="4" fill="#FFB347"/>
+    
+    <!-- Devanagari letter प - centered in orbital -->
+    <text x="80" y="105" font-family="'Noto Sans Devanagari', 'Arial Unicode MS', serif" font-size="85" font-weight="700" fill="url(#og1)" text-anchor="middle">प</text>
+    
+    <!-- 4-point star - top right -->
+    <path d="M138 24 L141 32 L149 35 L141 38 L138 46 L135 38 L127 35 L135 32 Z" fill="#FF6B00"/>
+    
+    <!-- Small accent dot - bottom left (same as logo.svg) -->
+    <circle cx="50" cy="135" r="4" fill="#FFB347" opacity="0.6"/>
+  </g>
+  
+  <!-- Wordmark - orange gradient -->
+  <text x="230" y="95" font-family="'Arial', sans-serif" font-size="48" font-weight="700" fill="url(#og2)" letter-spacing="8">PRAGYA</text>
+  
+  <!-- Underline -->
+  <rect x="230" y="108" width="160" height="3" rx="2" fill="url(#og2)"/>
+  
+  <!-- Subtitle - lighter amber -->
+  <text x="230" y="135" font-family="'Arial', sans-serif" font-size="14" fill="#CC8800" letter-spacing="2">VIRTUAL STEM LAB</text>
+</svg>
