@@ -83,7 +83,10 @@ export default function ExperimentView() {
   const [controlPanelPos, setControlPanelPos] = useState({ x: null, y: null })
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+  const [sessionId, setSessionId] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
   const canvasFrameRef = useRef(null)
+  const startTimeRef = useRef(Date.now())
 
   // Keyboard shortcut: spacebar to pause/resume
   useEffect(() => {
@@ -101,8 +104,19 @@ export default function ExperimentView() {
   useEffect(() => {
     if (exp && completedObjectives.length === exp.objectives.length && completedObjectives.length > 0) {
       setShowCompletion(true)
+      if (sessionId && !submitting) {
+        setSubmitting(true)
+        const score = Math.round((completedObjectives.length / exp.objectives.length) * 100)
+        const durationSeconds = Math.round((Date.now() - startTimeRef.current) / 1000)
+        experimentsAPI.submit(exp.id, {
+          variables,
+          observations: observations.map(o => o.text),
+          score,
+          duration_seconds: durationSeconds,
+        }).catch(() => {}).finally(() => setSubmitting(false))
+      }
     }
-  }, [completedObjectives, exp])
+  }, [completedObjectives, exp, sessionId])
 
   useEffect(() => {
     let cancelled = false
@@ -132,6 +146,15 @@ export default function ExperimentView() {
       })
 
     return () => { cancelled = true }
+  }, [exp?.id])
+
+  // Start experiment session on mount
+  useEffect(() => {
+    if (!exp?.id) return
+    startTimeRef.current = Date.now()
+    experimentsAPI.start(exp.id)
+      .then(data => setSessionId(data.session_id))
+      .catch(() => {})
   }, [exp?.id])
 
   const handleVariableChange = useCallback((key, value) => {
@@ -547,8 +570,8 @@ export default function ExperimentView() {
               }}>
                 Retry
               </button>
-              <button className="exp-btn-primary" onClick={() => navigate('/labs')}>
-                Next Experiment →
+              <button className="exp-btn-primary" onClick={() => navigate('/dashboard')}>
+                View Dashboard →
               </button>
             </div>
           </div>
