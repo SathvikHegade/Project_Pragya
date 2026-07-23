@@ -29,6 +29,7 @@ app = FastAPI(
 
 # CORS - allow specific origins (NOT "*" with credentials)
 ALLOWED_ORIGINS = [
+    "https://pragya-frontend.onrender.com",
     "https://project-pragya-ui.onrender.com",
     "http://localhost:5173",
     "http://localhost:3000",
