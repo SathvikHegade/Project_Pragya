@@ -1,6 +1,9 @@
 import os
 import asyncio
+import logging
 import asyncpg
+
+logger = logging.getLogger(__name__)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 POOL = None
@@ -145,4 +148,4 @@ async def init_db():
                 "en",
             )
 
-        print("✅ DB initialised with demo users")
+        logger.info("✅ DB initialised with demo users")

@@ -7,7 +7,7 @@ import uvicorn
 import logging
 
 from routers import auth, experiments, student, teacher, ai_tutor
-from utils.database import init_db
+from utils.database import init_db, get_pool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,8 +15,11 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("🚀 PRAGYA Backend starting...")
-    await init_db()
-    logger.info("✅ Database initialised")
+    try:
+        await init_db()
+        logger.info("✅ Database initialised")
+    except Exception as e:
+        logger.error(f"❌ Database init failed: {e}", exc_info=True)
     yield
     logger.info("🛑 PRAGYA Backend shutting down")
 
@@ -68,6 +71,32 @@ async def health():
         "version": "1.0.0",
         "timestamp": str(datetime.now()),
     }
+
+@app.get("/health/db")
+async def health_db():
+    try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            tables = await conn.fetch(
+                "SELECT table_name FROM information_schema.tables "
+                "WHERE table_schema = 'public' ORDER BY table_name"
+            )
+            table_names = [r["table_name"] for r in tables]
+            counts = {}
+            for t in table_names:
+                row = await conn.fetchrow(f"SELECT COUNT(*) as cnt FROM {t}")
+                counts[t] = row["cnt"]
+            return {
+                "status": "ok",
+                "tables": table_names,
+                "row_counts": counts,
+                "pool_size": pool.get_size(),
+            }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+        }
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
