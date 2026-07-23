@@ -1,70 +1,74 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
 import { EXPERIMENTS } from '../utils/experiments'
+import { studentAPI, teacherAPI, aiAPI } from '../utils/api'
 import styles from './Dashboard.module.css'
-
-const MOCK_PROGRESS = [
-  { id: 'pendulum', completed: true, score: 92, attempts: 3, lastPlayed: '2 days ago' },
-  { id: 'ohms-law', completed: true, score: 78, attempts: 2, lastPlayed: '5 days ago' },
-  { id: 'acid-base', completed: false, score: 45, attempts: 1, lastPlayed: '1 week ago' },
-  { id: 'photosynthesis', completed: false, score: 0, attempts: 0, lastPlayed: null },
-]
-
-const MOCK_QUIZ = [
-  { question: 'What happens to the period if you double the pendulum length?', options: ['Doubles', 'Halves', 'Increases by √2', 'No change'], correct: 2, answered: null },
-]
-
-const STREAK_DAYS = [true, true, true, false, true, true, false]
-
-const TEACHER_STATS = [
-  { icon: '👥', val: '48', label: 'Total Students', pct: 80 },
-  { icon: '🏫', val: '3', label: 'Active Classes', pct: 60 },
-  { icon: '⭐', val: '78%', label: 'Avg Class Score', pct: 78 },
-  { icon: '⚠️', val: '6', label: 'At Risk', pct: 30 },
-]
-
-const TEACHER_CLASSES = [
-  { icon: '🏫', title: 'Class 9 · Physics', meta: '32 students · Avg 76%' },
-  { icon: '🏫', title: 'Class 10 · Physics', meta: '28 students · Avg 81%' },
-  { icon: '🏫', title: 'Class 11 · Physics', meta: '22 students · Avg 74%' },
-]
-
-const TEACHER_ALERTS = [
-  { icon: '⚠️', title: 'Refraction of Light', meta: '3 students scored below 50% in the last quiz' },
-  { icon: '📌', title: 'Inactive Students', meta: '2 students inactive for 7+ days in Class 9' },
-  { icon: '🏆', title: 'Top Performer', meta: 'Rohan Kumar · 94% average' },
-]
-
-const TEACHER_TASKS = [
-  { icon: '📝', title: 'Review Observations', meta: 'Check latest lab notes from Class 10' },
-  { icon: '📣', title: 'Send Nudges', meta: 'Reach out to students marked at risk' },
-  { icon: '🧪', title: 'Assign Lab', meta: 'Create a new activity for Class 11' },
-]
 
 export default function Dashboard() {
   const { user } = useAuth()
   const { t } = useTheme()
   const [quizAnswer, setQuizAnswer] = useState(null)
-  const [aiMessage, setAiMessage] = useState("Welcome back! Based on your progress, I recommend trying the Acid-Base Indicators experiment next. You're close to mastering this concept!")
-  const [teacherMessage, setTeacherMessage] = useState('Welcome back! Today’s priority is to check students struggling with Refraction and send quick nudges.')
+  const [aiMessage, setAiMessage] = useState('')
+  const [teacherMessage, setTeacherMessage] = useState('')
 
   const isTeacher = (user?.role || '').toLowerCase() === 'teacher'
 
-  const completedCount = MOCK_PROGRESS.filter(p => p.completed).length
-  const totalScore = Math.round(MOCK_PROGRESS.filter(p => p.score > 0).reduce((s, p) => s + p.score, 0) / MOCK_PROGRESS.filter(p => p.score > 0).length)
-  const streak = STREAK_DAYS.filter(Boolean).length
+  const [studentProgress, setStudentProgress] = useState([])
+  const [quiz, setQuiz] = useState(null)
+  const [teacherStats, setTeacherStats] = useState(null)
 
-  const recentExps = MOCK_PROGRESS
-    .filter(p => p.lastPlayed)
-    .map(p => ({ ...EXPERIMENTS.find(e => e.id === p.id), ...p }))
+  useEffect(() => {
+    if (isTeacher) {
+      teacherAPI.classOverview()
+        .then(data => setTeacherStats(data))
+        .catch(() => setTeacherStats({ total_students: 0, active_this_week: 0, class_avg_score: 0 }))
+    } else {
+      studentAPI.progress()
+        .then(data => setStudentProgress(data.experiments || []))
+        .catch(() => setStudentProgress([]))
+      aiAPI.generateQuiz('pendulum')
+        .then(data => {
+          const q = data.questions?.[0]
+          if (q) setQuiz({ ...q, answered: null })
+        })
+        .catch(() => {})
+    }
+  }, [isTeacher])
+
+  const completedCount = studentProgress.filter(p => p.completed).length
+  const scoredExps = studentProgress.filter(p => p.best_score > 0)
+  const totalScore = scoredExps.length > 0
+    ? Math.round(scoredExps.reduce((s, p) => s + p.best_score, 0) / scoredExps.length)
+    : 0
+
+  const streakDays = (() => {
+    const days = new Set()
+    studentProgress.forEach(p => {
+      // best_score > 0 implies at least one session existed
+      // We approximate streak from attempt count; real dates would need session API
+    })
+    // Without session timestamps we can only show 0 for new users
+    return 0
+  })()
+
+  const recentExps = studentProgress
+    .filter(p => p.best_score > 0)
+    .map(p => {
+      const exp = EXPERIMENTS.find(e => e.id === p.experiment_id)
+      return { ...exp, ...p, score: p.best_score }
+    })
+
+  const rank = totalScore >= 90 ? 'Gold' : totalScore >= 70 ? 'Silver' : totalScore >= 40 ? 'Bronze' : 'Beginner'
+  const rankPct = totalScore >= 90 ? 'Top 5%' : totalScore >= 70 ? 'Top 15%' : totalScore >= 40 ? 'Top 40%' : 'Just started'
 
   if (isTeacher) {
+    const ts = teacherStats || { total_students: 0, active_this_week: 0, class_avg_score: 0 }
+
     return (
       <div className={styles.page}>
         <div className={styles.mesh} />
-
         <div className={styles.container}>
           <div className={`${styles.header} animate-fade-in`}>
             <div>
@@ -82,7 +86,12 @@ export default function Dashboard() {
           </div>
 
           <div className={`${styles.statsRow} animate-fade-in stagger-1`}>
-            {TEACHER_STATS.map((s, i) => (
+            {[
+              { icon: '👥', val: String(ts.total_students), label: 'Total Students', pct: Math.min(100, ts.total_students * 2) },
+              { icon: '🏫', val: String(Math.max(1, Math.ceil(ts.total_students / 16))), label: 'Active Classes', pct: 60 },
+              { icon: '⭐', val: `${ts.class_avg_score}%`, label: 'Avg Class Score', pct: ts.class_avg_score },
+              { icon: '🔥', val: String(ts.active_this_week), label: 'Active This Week', pct: Math.min(100, ts.active_this_week * 5) },
+            ].map((s, i) => (
               <div key={i} className={`${styles.statCard} glass-card`}>
                 <div className={styles.statIcon}>{s.icon}</div>
                 <div className={styles.statVal}>{s.val}</div>
@@ -107,7 +116,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-                <div className={styles.aiMessage}>{teacherMessage}</div>
+                <div className={styles.aiMessage}>{teacherMessage || 'Checking class performance...'}</div>
                 <div className={styles.aiActions}>
                   <Link to="/teacher" className="btn-primary" style={{ fontSize: '0.9rem', padding: '10px 20px' }}>
                     Open Analytics
@@ -127,19 +136,13 @@ export default function Dashboard() {
 
               <div className={`${styles.quizCard} animate-fade-in stagger-3`}>
                 <div className={styles.quizHeader}>
-                  <span>Today’s Focus</span>
+                  <span>Today's Focus</span>
                   <span className="badge badge-physics">Classes</span>
                 </div>
-                <div className={styles.expList}>
-                  {TEACHER_TASKS.map((task, i) => (
-                    <div key={i} className={styles.expItem} style={{ cursor: 'default' }}>
-                      <span className={styles.expItemIcon}>{task.icon}</span>
-                      <div className={styles.expItemInfo}>
-                        <div className={styles.expItemTitle}>{task.title}</div>
-                        <div className={styles.expItemMeta}>{task.meta}</div>
-                      </div>
-                    </div>
-                  ))}
+                <div style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  {ts.active_this_week > 0
+                    ? `${ts.active_this_week} students active this week. Average score: ${ts.class_avg_score}%`
+                    : 'No student activity recorded yet.'}
                 </div>
               </div>
             </div>
@@ -155,16 +158,10 @@ export default function Dashboard() {
                     </svg>
                   </Link>
                 </div>
-                <div className={styles.expList}>
-                  {TEACHER_CLASSES.map((c, i) => (
-                    <Link key={i} to="/teacher" className={styles.expItem}>
-                      <span className={styles.expItemIcon}>{c.icon}</span>
-                      <div className={styles.expItemInfo}>
-                        <div className={styles.expItemTitle}>{c.title}</div>
-                        <div className={styles.expItemMeta}>{c.meta}</div>
-                      </div>
-                    </Link>
-                  ))}
+                <div style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  {ts.total_students > 0
+                    ? `${ts.total_students} students enrolled across your classes`
+                    : 'No students enrolled yet.'}
                 </div>
               </div>
 
@@ -173,16 +170,10 @@ export default function Dashboard() {
                   <h3>Alerts & Insights</h3>
                   <span style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 500 }}>Updated today</span>
                 </div>
-                <div className={styles.expList}>
-                  {TEACHER_ALERTS.map((a, i) => (
-                    <div key={i} className={styles.expItem} style={{ cursor: 'default' }}>
-                      <span className={styles.expItemIcon}>{a.icon}</span>
-                      <div className={styles.expItemInfo}>
-                        <div className={styles.expItemTitle}>{a.title}</div>
-                        <div className={styles.expItemMeta}>{a.meta}</div>
-                      </div>
-                    </div>
-                  ))}
+                <div style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  {ts.active_this_week === 0
+                    ? 'No student activity yet — students will appear here once they start experiments.'
+                    : `${ts.active_this_week} students active this week. Keep encouraging participation!`}
                 </div>
               </div>
             </div>
@@ -195,7 +186,6 @@ export default function Dashboard() {
   return (
     <div className={styles.page}>
       <div className={styles.mesh} />
-
       <div className={styles.container}>
         <div className={`${styles.header} animate-fade-in`}>
           <div>
@@ -231,10 +221,10 @@ export default function Dashboard() {
 
           <div className={`${styles.statCard} glass-card`}>
             <div className={styles.statIcon}>🔥</div>
-            <div className={styles.statVal}>{streak}</div>
+            <div className={styles.statVal}>{streakDays}</div>
             <div className={styles.statLab}>{t('dash.dayStreak')}</div>
             <div className={styles.streakDots}>
-              {STREAK_DAYS.map((day, i) => (
+              {[false, false, false, false, false, false, false].map((day, i) => (
                 <div key={i} className={`${styles.streakDot} ${day ? styles.streakOn : ''}`} />
               ))}
             </div>
@@ -242,9 +232,9 @@ export default function Dashboard() {
 
           <div className={`${styles.statCard} glass-card`}>
             <div className={styles.statIcon}>🏆</div>
-            <div className={styles.statVal}>Silver</div>
+            <div className={styles.statVal}>{rank}</div>
             <div className={styles.statLab}>{t('dash.currentRank')}</div>
-            <div className={styles.rankBadge}>Top 15% in class</div>
+            <div className={styles.rankBadge}>{rankPct} in class</div>
           </div>
         </div>
 
@@ -261,7 +251,11 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              <div className={styles.aiMessage}>{aiMessage}</div>
+              <div className={styles.aiMessage}>
+                {aiMessage || (completedCount === 0
+                  ? 'Welcome! Start your first experiment to begin your learning journey.'
+                  : `Great progress! You've completed ${completedCount} experiment${completedCount !== 1 ? 's' : ''}. Keep going!`)}
+              </div>
               <div className={styles.aiActions}>
                 <Link to="/labs" className="btn-primary" style={{ fontSize: '0.9rem', padding: '10px 20px' }}>
                   {t('dash.startRecommended')}
@@ -272,40 +266,40 @@ export default function Dashboard() {
                 <button
                   className="btn-secondary"
                   style={{ fontSize: '0.9rem', padding: '10px 20px' }}
-                  onClick={() => setAiMessage("Great question! Acid-base chemistry is all about pH. Remember: pH < 7 is acidic, pH = 7 is neutral, pH > 7 is basic. The indicator changes colour based on this!")}
+                  onClick={() => setAiMessage('Try the Acid-Base Indicators experiment next — it\'s a great introduction to chemistry!')}
                 >
                   {t('dash.askQuestion')}
                 </button>
               </div>
             </div>
 
-            <div className={`${styles.quizCard} animate-fade-in stagger-3`}>
-              <div className={styles.quizHeader}>
-                <span>{t('dash.quickQuiz')}</span>
-                <span className="badge badge-physics">Physics · Class 9</span>
-              </div>
-              <p className={styles.quizQ}>{MOCK_QUIZ[0].question}</p>
-              <div className={styles.quizOptions}>
-                {MOCK_QUIZ[0].options.map((opt, i) => (
-                  <button
-                    key={i}
-                    className={`${styles.quizOption} ${quizAnswer === i ? (i === MOCK_QUIZ[0].correct ? styles.correct : styles.wrong) : ''} ${quizAnswer !== null && i === MOCK_QUIZ[0].correct ? styles.correct : ''}`}
-                    onClick={() => quizAnswer === null && setQuizAnswer(i)}
-                    disabled={quizAnswer !== null}
-                  >
-                    <span className={styles.optLetter}>{String.fromCharCode(65 + i)}</span>
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              {quizAnswer !== null && (
-                <div className={`${styles.quizResult} ${quizAnswer === MOCK_QUIZ[0].correct ? styles.resultCorrect : styles.resultWrong}`}>
-                  {quizAnswer === MOCK_QUIZ[0].correct
-                    ? 'Correct! When length quadruples, period doubles (T ∝ √L)'
-                    : 'The period T ∝ √L, so doubling L increases T by √2 ≈ 1.41x'}
+            {quiz && (
+              <div className={`${styles.quizCard} animate-fade-in stagger-3`}>
+                <div className={styles.quizHeader}>
+                  <span>{t('dash.quickQuiz')}</span>
+                  <span className="badge badge-physics">Physics</span>
                 </div>
-              )}
-            </div>
+                <p className={styles.quizQ}>{quiz.question}</p>
+                <div className={styles.quizOptions}>
+                  {quiz.options.map((opt, i) => (
+                    <button
+                      key={i}
+                      className={`${styles.quizOption} ${quizAnswer === i ? (i === quiz.correct ? styles.correct : styles.wrong) : ''} ${quizAnswer !== null && i === quiz.correct ? styles.correct : ''}`}
+                      onClick={() => quizAnswer === null && setQuizAnswer(i)}
+                      disabled={quizAnswer !== null}
+                    >
+                      <span className={styles.optLetter}>{String.fromCharCode(65 + i)}</span>
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+                {quizAnswer !== null && (
+                  <div className={`${styles.quizResult} ${quizAnswer === quiz.correct ? styles.resultCorrect : styles.resultWrong}`}>
+                    {quiz.explanation}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className={styles.rightCol}>
@@ -320,12 +314,17 @@ export default function Dashboard() {
                 </Link>
               </div>
               <div className={styles.expList}>
+                {recentExps.length === 0 && (
+                  <div style={{ padding: '16px', color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center' }}>
+                    No experiments started yet. Begin your first experiment!
+                  </div>
+                )}
                 {recentExps.map(exp => (
-                  <Link key={exp.id} to={`/experiment/${exp.id}`} className={styles.expItem}>
+                  <Link key={exp.experiment_id} to={`/experiment/${exp.experiment_id}`} className={styles.expItem}>
                     <span className={styles.expItemIcon}>{exp.icon}</span>
                     <div className={styles.expItemInfo}>
                       <div className={styles.expItemTitle}>{exp.title}</div>
-                      <div className={styles.expItemMeta}>{exp.lastPlayed} · {exp.attempts} attempt{exp.attempts !== 1 ? 's' : ''}</div>
+                      <div className={styles.expItemMeta}>{exp.attempts} attempt{exp.attempts !== 1 ? 's' : ''}</div>
                     </div>
                     <div className={styles.expItemRight}>
                       <div className={`${styles.expScore} ${exp.score >= 70 ? styles.scoreHigh : exp.score >= 40 ? styles.scoreMed : styles.scoreLow}`}>
@@ -344,7 +343,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 500 }}>{t('dash.aiSuggested')}</span>
               </div>
               <div className={styles.recGrid}>
-                {EXPERIMENTS.filter(e => !MOCK_PROGRESS.find(p => p.id === e.id && p.completed)).slice(0, 4).map(exp => (
+                {EXPERIMENTS.filter(e => !studentProgress.find(p => p.experiment_id === e.id && p.completed)).slice(0, 4).map(exp => (
                   <Link key={exp.id} to={`/experiment/${exp.id}`} className={styles.recCard}>
                     <span style={{ fontSize: '2rem' }}>{exp.icon}</span>
                     <div className={styles.recTitle}>{exp.title}</div>
