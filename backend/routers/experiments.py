@@ -57,7 +57,7 @@ async def get_experiment(experiment_id: str, current_user=Depends(get_current_us
     return exp
 
 @router.post("/{experiment_id}/start")
-async def start_session(experiment_id: str, body: StartSession, current_user=Depends(get_current_user), db=Depends(get_db)):
+async def start_session(experiment_id: str, body: StartSession = StartSession(), current_user=Depends(get_current_user), db=Depends(get_db)):
     session_id = str(uuid.uuid4())
     await db.execute(
         "INSERT INTO experiment_sessions (id, user_id, experiment_id, variables) VALUES ($1,$2,$3,$4)",

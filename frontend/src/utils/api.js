@@ -35,7 +35,7 @@ export const experimentsAPI = {
     return request(`/api/experiments${qs ? '?' + qs : ''}`)
   },
   get: (id) => request(`/api/experiments/${id}`),
-  start: (id) => request(`/api/experiments/${id}/start`, { method: 'POST' }),
+  start: (id) => request(`/api/experiments/${id}/start`, { method: 'POST', body: JSON.stringify({}) }),
   submit: (id, data) =>
     request(`/api/experiments/${id}/submit`, { method: 'POST', body: JSON.stringify(data) }),
   listObservations: (id) => request(`/api/experiments/${id}/observations`),
