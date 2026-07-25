@@ -7,7 +7,7 @@ import uvicorn
 import logging
 
 from routers import auth, experiments, student, teacher, ai_tutor
-from utils.database import init_db, get_pool
+from utils.database import init_db, get_pool, close_pool
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,10 +17,11 @@ async def lifespan(app: FastAPI):
     logger.info("🚀 PRAGYA Backend starting...")
     try:
         await init_db()
-        logger.info("✅ Database initialised")
     except Exception as e:
         logger.error(f"❌ Database init failed: {e}", exc_info=True)
+        logger.error("Set DATABASE_URL in Render dashboard → Environment Variables")
     yield
+    await close_pool()
     logger.info("🛑 PRAGYA Backend shutting down")
 
 app = FastAPI(
@@ -97,6 +98,16 @@ async def health_db():
             "status": "error",
             "error": str(e),
         }
+
+
+@app.post("/admin/init-db")
+async def admin_init_db():
+    try:
+        await init_db(retries=1)
+        return {"status": "ok", "message": "Database tables created / verified"}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

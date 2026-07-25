@@ -1,0 +1,31 @@
+services:
+  # ── Backend: FastAPI + asyncpg, talks to Supabase Postgres ──
+  - type: web
+    name: pragya-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # paste your Supabase connection string in the Render dashboard
+      - key: SECRET_KEY
+        generateValue: true  # Render auto-generates a strong random secret
+      - key: PORT
+        value: "8000"
+
+  # ── Frontend: React/Vite static site ──
+  - type: web
+    name: pragya-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false          # set to your backend URL, e.g. https://pragya-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

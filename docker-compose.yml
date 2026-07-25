@@ -10,9 +10,7 @@ services:
       - "8000:8000"
     environment:
       - SECRET_KEY=${SECRET_KEY:-pragya-dev-secret-change-in-prod}
-      - DB_PATH=/data/pragya.db
-    volumes:
-      - pragya_data:/data
+      - DATABASE_URL=${DATABASE_URL}   # your Supabase connection string, set in a local .env file
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -30,7 +28,3 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-
-volumes:
-  pragya_data:
-    driver: local
