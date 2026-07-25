@@ -76,19 +76,21 @@ async def submit_session(experiment_id: str, body: SubmitSession, current_user=D
     )
     if existing:
         session_id = existing["id"]
+        completed_at = datetime.utcnow()
         await db.execute(
             "UPDATE experiment_sessions SET variables=$1, observations=$2, score=$3, completed=1, "
             "duration_seconds=$4, completed_at=$5 WHERE id=$6",
             json.dumps(body.variables), json.dumps(body.observations), body.score,
-            body.duration_seconds, datetime.utcnow().isoformat(), session_id
+            body.duration_seconds, completed_at, session_id
         )
     else:
         # No open session found (e.g. start() failed earlier) - insert a
         # complete record so the attempt is still saved.
         session_id = str(uuid.uuid4())
+        completed_at = datetime.utcnow()
         await db.execute(
             "INSERT INTO experiment_sessions (id, user_id, experiment_id, variables, observations, score, completed, duration_seconds, completed_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
-            session_id, current_user["id"], experiment_id, json.dumps(body.variables), json.dumps(body.observations), body.score, 1, body.duration_seconds, datetime.utcnow().isoformat()
+            session_id, current_user["id"], experiment_id, json.dumps(body.variables), json.dumps(body.observations), body.score, 1, body.duration_seconds, completed_at
         )
     return {"session_id": session_id, "score": body.score, "status": "completed"}
 
@@ -106,9 +108,9 @@ async def add_observation(experiment_id: str, body: ObservationCreate, current_u
     if not text:
         raise HTTPException(status_code=400, detail="Observation text is required")
     obs_id = str(uuid.uuid4())
-    created_at = datetime.utcnow().isoformat()
+    created_at = datetime.utcnow()
     await db.execute(
         "INSERT INTO observations (id, user_id, experiment_id, text, created_at) VALUES ($1,$2,$3,$4,$5)",
         obs_id, current_user["id"], experiment_id, text, created_at
     )
-    return {"id": obs_id, "experiment_id": experiment_id, "text": text, "created_at": created_at}
+    return {"id": obs_id, "experiment_id": experiment_id, "text": text, "created_at": created_at.isoformat()}
