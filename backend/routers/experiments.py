@@ -67,11 +67,29 @@ async def start_session(experiment_id: str, body: StartSession, current_user=Dep
 
 @router.post("/{experiment_id}/submit")
 async def submit_session(experiment_id: str, body: SubmitSession, current_user=Depends(get_current_user), db=Depends(get_db)):
-    session_id = str(uuid.uuid4())
-    await db.execute(
-        "INSERT INTO experiment_sessions (id, user_id, experiment_id, variables, observations, score, completed, duration_seconds, completed_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
-        session_id, current_user["id"], experiment_id, json.dumps(body.variables), json.dumps(body.observations), body.score, 1, body.duration_seconds, datetime.utcnow().isoformat()
+    # Update the most recent open session for this user+experiment instead of
+    # inserting a duplicate row (which was double-counting "attempts").
+    existing = await db.fetchrow(
+        "SELECT id FROM experiment_sessions WHERE user_id=$1 AND experiment_id=$2 AND completed=0 "
+        "ORDER BY started_at DESC LIMIT 1",
+        current_user["id"], experiment_id
     )
+    if existing:
+        session_id = existing["id"]
+        await db.execute(
+            "UPDATE experiment_sessions SET variables=$1, observations=$2, score=$3, completed=1, "
+            "duration_seconds=$4, completed_at=$5 WHERE id=$6",
+            json.dumps(body.variables), json.dumps(body.observations), body.score,
+            body.duration_seconds, datetime.utcnow().isoformat(), session_id
+        )
+    else:
+        # No open session found (e.g. start() failed earlier) - insert a
+        # complete record so the attempt is still saved.
+        session_id = str(uuid.uuid4())
+        await db.execute(
+            "INSERT INTO experiment_sessions (id, user_id, experiment_id, variables, observations, score, completed, duration_seconds, completed_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+            session_id, current_user["id"], experiment_id, json.dumps(body.variables), json.dumps(body.observations), body.score, 1, body.duration_seconds, datetime.utcnow().isoformat()
+        )
     return {"session_id": session_id, "score": body.score, "status": "completed"}
 
 @router.get("/{experiment_id}/observations")

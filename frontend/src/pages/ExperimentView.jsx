@@ -85,6 +85,7 @@ export default function ExperimentView() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const [sessionId, setSessionId] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [saveError, setSaveError] = useState(false)
   const canvasFrameRef = useRef(null)
   const startTimeRef = useRef(Date.now())
 
@@ -113,7 +114,17 @@ export default function ExperimentView() {
           observations: observations.map(o => o.text),
           score,
           duration_seconds: durationSeconds,
-        }).catch(() => {}).finally(() => setSubmitting(false))
+        })
+          .then(() => setSaveError(false))
+          .catch(err => {
+            console.error('Failed to save experiment results:', err)
+            setSaveError(true)
+          })
+          .finally(() => setSubmitting(false))
+      } else if (!sessionId) {
+        // No session was ever created (start() failed) - nothing to submit against.
+        console.error('No active session - experiment results were not saved.')
+        setSaveError(true)
       }
     }
   }, [completedObjectives, exp, sessionId])
@@ -154,7 +165,7 @@ export default function ExperimentView() {
     startTimeRef.current = Date.now()
     experimentsAPI.start(exp.id)
       .then(data => setSessionId(data.session_id))
-      .catch(() => {})
+      .catch(err => console.error('Failed to start experiment session:', err))
   }, [exp?.id])
 
   const handleVariableChange = useCallback((key, value) => {
@@ -562,6 +573,16 @@ export default function ExperimentView() {
               📊 Data points recorded: {graphData.length}<br/>
               🧪 Experiment: {exp.title}
             </div>
+            {saveError && (
+              <div style={{
+                padding: '10px 14px', margin: '0 0 16px', background: 'rgba(220,38,38,0.08)',
+                border: '1px solid rgba(220,38,38,0.25)', borderRadius: 10,
+                fontSize: 13, color: '#b91c1c', textAlign: 'left'
+              }}>
+                ⚠️ Your result couldn't be saved to your account — it won't appear on your Dashboard.
+                Check your connection and try Retry below.
+              </div>
+            )}
             <div className="exp-completion-actions">
               <button className="exp-btn-ghost" onClick={() => {
                 setShowCompletion(false)
