@@ -234,4 +234,4 @@ See CONTRIBUTING.md for the full guide.
 
 ## License
 
-MIT © 2024 Sathvik Hegade — see LICENSE for details.
+MIT © 2026 Sathvik Hegade — see LICENSE for details.
